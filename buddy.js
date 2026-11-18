@@ -9,7 +9,7 @@ buddy.style.right = "20px";
 buddy.style.zIndex = "999999";
 document.body.appendChild(buddy);
 document.addEventListener("mousemove", function (event) {
-  console.log(event.clientX, event.clientY);
-  buddy.style.left = event.clientX + "px";
+  buddy.style.left = event.clientX - 30 + "px";
   buddy.style.top = event.clientY + "px";
+  buddy.style.pointerEvents = "none";
 });
