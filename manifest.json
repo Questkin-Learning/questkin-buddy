@@ -1,8 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Questkin Buddy",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "content_scripts": [
     { "matches": ["<all_urls>"], "js": ["buddy.js"] }
+  ],
+  "web_accessible_resources": [
+    { "resources": ["kin.png"], "matches": ["<all_urls>"] }
   ]
 }
