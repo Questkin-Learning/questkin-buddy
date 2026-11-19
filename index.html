@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Questkin</title>
+<style>
+body {
+margin: 0;
+min-height: 100vh;
+background: #fff8f0;
+font-family: system-ui, sans-serif;
+color: #2b2a3d;
+}
+h1 {
+margin: 24px 24px 4px;
+font-size: 28px;
+}
+p.subtitle {
+margin: 0 24px 24px;
+color: #6b6a80;
+}
+#district {
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+gap: 16px;
+margin: 0 24px;
+max-width: 720px;
+}
+.building {
+aspect-ratio: 1;
+border-radius: 16px;
+background: #e6e2da;
+display: flex;
+align-items: center;
+justify-content: center;
+text-align: center;
+padding: 8px;
+font-size: 14px;
+color: #6b6a80;
+transition: background 0.4s, color 0.4s, transform 0.4s;
+}
+.building.built {
+background: #3bb98a;
+color: white;
+transform: translateY(-4px);
+}
+#kin {
+position: fixed;
+right: 20px;
+bottom: 20px;
+width: 120px;
+height: 149px;
+background: url(kin.png) no-repeat;
+background-size: contain;
+cursor: pointer;
+}
+</style>
+</head>
+<body>
+<h1>Psychology and Sociology</h1>
+<p class="subtitle">Your first district</p>
+<div id="district"></div>
+<div id="kin"></div>
+
+<script>
+const skills = [
+"Classical conditioning",
+"Operant conditioning",
+"Working memory",
+"Cognitive dissonance",
+"Social facilitation"
+];
+
+const district = document.getElementById("district");
+
+for (const name of skills) {
+const building = document.createElement("div");
+building.className = "building";
+building.textContent = name;
+district.appendChild(building);
+}
+</script>
+</body>
+</html>
