@@ -1,86 +1,408 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Questkin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
 <style>
-body {
-margin: 0;
-min-height: 100vh;
-background: #fff8f0;
-font-family: system-ui, sans-serif;
-color: #2b2a3d;
-}
-h1 {
-margin: 24px 24px 4px;
-font-size: 28px;
-}
-p.subtitle {
-margin: 0 24px 24px;
-color: #6b6a80;
-}
-#district {
-display: grid;
-grid-template-columns: repeat(5, 1fr);
-gap: 16px;
-margin: 0 24px;
-max-width: 720px;
-}
-.building {
-aspect-ratio: 1;
-border-radius: 16px;
-background: #e6e2da;
-display: flex;
-align-items: center;
-justify-content: center;
-text-align: center;
-padding: 8px;
-font-size: 14px;
-color: #6b6a80;
-transition: background 0.4s, color 0.4s, transform 0.4s;
-}
-.building.built {
-background: #3bb98a;
-color: white;
-transform: translateY(-4px);
-}
-#kin {
-position: fixed;
-right: 20px;
-bottom: 20px;
-width: 120px;
-height: 149px;
-background: url(kin.png) no-repeat;
-background-size: contain;
-cursor: pointer;
-}
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 24px 24px 220px;
+    background: #FFF8F0;
+    color: #2B2A3D;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.45;
+  }
+
+  h1 {
+    font-family: Nunito, system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 32px;
+    margin: 0 0 4px;
+  }
+
+  .sub { color: #6B6A80; margin: 0 0 24px; }
+  .note { color: #6B6A80; font-size: 14px; margin: 16px 0 0; }
+
+  .district {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    max-width: 1000px;
+  }
+
+  .building {
+    background: #ECE7DF;
+    color: #6B6A80;
+    border-radius: 16px;
+    min-height: 150px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    font-weight: 500;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  .building .label { font-size: 14px; }
+  .building.proven { background: #3BB98A; color: #2B2A3D; }
+  .building.revisit { background: #F5B83D; color: #2B2A3D; }
+
+  .card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 16px rgba(43, 42, 61, 0.08);
+  }
+
+  #win { display: none; max-width: 1000px; margin-top: 24px; }
+  #win h2 { font-family: Nunito, system-ui, sans-serif; font-size: 24px; margin: 0 0 4px; }
+
+  button {
+    font: 600 15px Inter, system-ui, sans-serif;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 0;
+    cursor: pointer;
+    color: #2B2A3D;
+  }
+
+  .primary { background: #FF7A59; }
+  .secondary { background: transparent; border: 1.5px solid #6B6A80; }
+
+  #bubble {
+    display: none;
+    position: fixed;
+    right: 16px;
+    bottom: 180px;
+    width: min(300px, calc(100vw - 32px));
+    z-index: 11;
+  }
+
+  #topic { color: #6C5CE7; font-size: 14px; font-weight: 600; margin: 0 0 6px; }
+  #question { font-family: Nunito, system-ui, sans-serif; font-weight: 700; font-size: 18px; margin: 0; }
+  #answer { display: none; margin: 8px 0 0; }
+  .row { display: flex; gap: 8px; margin-top: 14px; }
+
+  #kin-spot {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    width: 120px;
+    height: 149px;
+    transform-origin: bottom right;
+    z-index: 10;
+  }
+
+  #kin {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transform-origin: bottom center;
+    transition: transform 0.5s ease-out;
+  }
+
+  #hopper { position: absolute; inset: 0; transform-origin: bottom center; }
+
+  #kin-body {
+    position: absolute;
+    inset: 0;
+    background: url("kin.png") center / contain no-repeat;
+    transform-origin: bottom center;
+    animation: breathe 3.2s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    50% { transform: scaleY(1.025); }
+  }
+
+  .lid {
+    position: absolute;
+    width: 15px;
+    height: 17px;
+    background: #fdeed3;
+    border-radius: 50%;
+    border-bottom: 2px solid #4a3340;
+    transform-origin: top center;
+    transform: scaleY(0);
+    transition: transform 0.09s ease-in;
+  }
+
+  #lid-left { left: 42.7px; top: 48.1px; }
+  #lid-right { left: 70.4px; top: 46.8px; }
+
+  #badge {
+    display: none;
+    position: absolute;
+    left: 88px;
+    top: 18px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #6C5CE7;
+    color: #FFFFFF;
+    font: 700 15px/24px Nunito, system-ui, sans-serif;
+    text-align: center;
+  }
+
+  @media (max-width: 700px) {
+    h1 { font-size: 24px; }
+    .district { grid-template-columns: repeat(2, 1fr); }
+    #kin-spot { transform: scale(0.8); }
+    #bubble { bottom: 150px; }
+  }
 </style>
 </head>
 <body>
+
 <h1>Psychology and Sociology</h1>
-<p class="subtitle">Your first district</p>
-<div id="district"></div>
-<div id="kin"></div>
+<p class="sub">Your first district</p>
+
+<div class="district" id="district"></div>
+<p class="note">Draft cards, not yet checked by an expert.</p>
+
+<div class="card" id="win">
+  <h2>District complete</h2>
+  <p>All five buildings are proven. Nice work.</p>
+  <div class="row">
+    <button class="secondary" id="reset">Start over</button>
+  </div>
+</div>
+
+<div class="card" id="bubble">
+  <p id="topic"></p>
+  <p id="question"></p>
+  <p id="answer"></p>
+  <div class="row">
+    <button class="primary" id="show">Show answer</button>
+    <button class="primary" id="got">Got it</button>
+    <button class="secondary" id="not">Not yet</button>
+  </div>
+</div>
+
+<div id="kin-spot">
+  <div id="kin">
+    <div id="hopper">
+      <div id="kin-body">
+        <div class="lid" id="lid-left"></div>
+        <div class="lid" id="lid-right"></div>
+      </div>
+      <div id="badge">?</div>
+    </div>
+  </div>
+</div>
 
 <script>
-const skills = [
-"Classical conditioning",
-"Operant conditioning",
-"Working memory",
-"Cognitive dissonance",
-"Social facilitation"
+const cards = [
+  {
+    building: "Classical conditioning",
+    question: "In classical conditioning, what is a conditioned stimulus?",
+    answer: "A once-neutral signal that, after being paired with something that naturally causes a response, starts to cause that response by itself. The bell in Pavlov's experiments is the classic example."
+  },
+  {
+    building: "Operant conditioning",
+    question: "What is negative reinforcement?",
+    answer: "Taking away something unpleasant so a behaviour becomes more likely. It is not punishment. Example: fastening your seatbelt stops the beeping."
+  },
+  {
+    building: "Working memory",
+    question: "Roughly how much can working memory hold at once?",
+    answer: "Only a few items. The classic figure is seven, plus or minus two, and newer estimates are closer to four chunks. Grouping items into chunks helps."
+  },
+  {
+    building: "Cognitive dissonance",
+    question: "What is cognitive dissonance?",
+    answer: "The discomfort of holding two conflicting beliefs, or of acting against a belief. People often ease it by changing the belief or justifying the action."
+  },
+  {
+    building: "Social facilitation",
+    question: "What does social facilitation predict?",
+    answer: "Having other people present improves performance on simple or well-practised tasks, and tends to worsen it on difficult or new ones."
+  }
 ];
 
-const district = document.getElementById("district");
+const STORE = "questkin-psych-soc-v1";
+let progress = cards.map(function () { return ""; });
 
-for (const name of skills) {
-const building = document.createElement("div");
-building.className = "building";
-building.textContent = name;
-district.appendChild(building);
+try {
+  const saved = JSON.parse(localStorage.getItem(STORE));
+  if (Array.isArray(saved) && saved.length === cards.length) progress = saved;
+} catch (error) {}
+
+function save() {
+  try {
+    localStorage.setItem(STORE, JSON.stringify(progress));
+  } catch (error) {}
 }
+
+const districtBox = document.getElementById("district");
+const winBox = document.getElementById("win");
+const bubble = document.getElementById("bubble");
+const topicText = document.getElementById("topic");
+const questionText = document.getElementById("question");
+const answerText = document.getElementById("answer");
+const showButton = document.getElementById("show");
+const gotButton = document.getElementById("got");
+const notButton = document.getElementById("not");
+const resetButton = document.getElementById("reset");
+const kinSpot = document.getElementById("kin-spot");
+const kin = document.getElementById("kin");
+const hopper = document.getElementById("hopper");
+const badge = document.getElementById("badge");
+const leftLid = document.getElementById("lid-left");
+const rightLid = document.getElementById("lid-right");
+
+const buildings = cards.map(function (card) {
+  const box = document.createElement("div");
+  const title = document.createElement("div");
+  const label = document.createElement("div");
+  title.textContent = card.building;
+  label.className = "label";
+  box.appendChild(title);
+  box.appendChild(label);
+  districtBox.appendChild(box);
+  return { box: box, label: label };
+});
+
+function allProven() {
+  return progress.filter(function (state) { return state !== "proven"; }).length === 0;
+}
+
+function draw() {
+  buildings.forEach(function (item, index) {
+    const state = progress[index];
+    item.box.className = "building" + (state ? " " + state : "");
+    if (state === "proven") item.label.textContent = "Proven";
+    else if (state === "revisit") item.label.textContent = "Revisit";
+    else item.label.textContent = "Not built yet";
+  });
+  winBox.style.display = allProven() ? "block" : "none";
+}
+
+let current = -1;
+let lastAsked = -1;
+let questionReady = false;
+
+function pickNext() {
+  for (let step = 1; step <= cards.length; step++) {
+    const index = (lastAsked + step) % cards.length;
+    if (progress[index] !== "proven") return index;
+  }
+  return -1;
+}
+
+function setLids(amount) {
+  leftLid.style.transform = "scaleY(" + amount + ")";
+  rightLid.style.transform = "scaleY(" + amount + ")";
+}
+
+function blink() {
+  setLids(1);
+  setTimeout(function () { setLids(0); }, 140);
+}
+
+function hop() {
+  hopper.animate(
+    [
+      { transform: "translateY(0)" },
+      { transform: "translateY(-22px)", offset: 0.35 },
+      { transform: "translateY(0)", offset: 0.7 },
+      { transform: "translateY(-6px)", offset: 0.85 },
+      { transform: "translateY(0)" }
+    ],
+    { duration: 500, easing: "ease-out" }
+  );
+}
+
+function wiggle() {
+  hopper.animate(
+    [
+      { transform: "rotate(0deg)" },
+      { transform: "rotate(-5deg)" },
+      { transform: "rotate(5deg)" },
+      { transform: "rotate(-3deg)" },
+      { transform: "rotate(0deg)" }
+    ],
+    { duration: 450, easing: "ease-in-out" }
+  );
+}
+
+function offerQuestion() {
+  current = pickNext();
+  if (current === -1) return;
+  questionReady = true;
+  badge.style.display = "block";
+  wiggle();
+}
+
+function openQuestion() {
+  const card = cards[current];
+  topicText.textContent = card.building;
+  questionText.textContent = card.question;
+  answerText.textContent = card.answer;
+  answerText.style.display = "none";
+  showButton.style.display = "block";
+  gotButton.style.display = "none";
+  notButton.style.display = "none";
+  bubble.style.display = "block";
+  badge.style.display = "none";
+  questionReady = false;
+}
+
+function finishQuestion(remembered) {
+  progress[current] = remembered ? "proven" : "revisit";
+  lastAsked = current;
+  save();
+  draw();
+  bubble.style.display = "none";
+  if (remembered) hop();
+  else blink();
+  setTimeout(offerQuestion, 4000);
+}
+
+showButton.addEventListener("click", function () {
+  answerText.style.display = "block";
+  showButton.style.display = "none";
+  gotButton.style.display = "block";
+  notButton.style.display = "block";
+});
+
+gotButton.addEventListener("click", function () { finishQuestion(true); });
+notButton.addEventListener("click", function () { finishQuestion(false); });
+
+resetButton.addEventListener("click", function () {
+  progress = cards.map(function () { return ""; });
+  lastAsked = -1;
+  save();
+  draw();
+  setTimeout(offerQuestion, 1000);
+});
+
+kin.addEventListener("click", function () {
+  if (questionReady) openQuestion();
+  else hop();
+});
+
+document.addEventListener("pointermove", function (event) {
+  const box = kinSpot.getBoundingClientRect();
+  const distance = event.clientX - (box.left + box.width / 2);
+  const tilt = Math.max(-8, Math.min(8, distance / 80));
+  kin.style.transform = "rotate(" + tilt + "deg)";
+});
+
+draw();
+setInterval(blink, 4200);
+setTimeout(offerQuestion, 3000);
 </script>
+
 </body>
 </html>
